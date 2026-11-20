@@ -77,14 +77,11 @@ export default function DashboardPage() {
   const dashboardMetrics = useMemo(() => {
     if (!isAuthenticated || transactions.length === 0) {
       return {
-        income: 8500000,
-        expense: 3250000,
-        netCashflow: 5250000,
+        income: 0,
+        expense: 0,
+        netCashflow: 0,
         distribution: [
-          { name: "Kebutuhan Pokok", pct: 45, amountLabel: "Rp 3.33M" },
-          { name: "Transportasi", pct: 18, amountLabel: "Rp 1.33M" },
-          { name: "Hiburan & Makan", pct: 15, amountLabel: "Rp 1.11M" },
-          { name: "Tagihan & Utilitas", pct: 12, amountLabel: "Rp 890K" },
+          { name: "Belum Ada Pengeluaran", pct: 0, amountLabel: "Rp 0" },
         ],
       };
     }
@@ -121,8 +118,7 @@ export default function DashboardPage() {
         sortedCats.length > 0
           ? sortedCats
           : [
-              { name: "Kebutuhan Pokok", pct: 0, amountLabel: "Rp 0" },
-              { name: "Transportasi", pct: 0, amountLabel: "Rp 0" },
+              { name: "Belum Ada Pengeluaran", pct: 0, amountLabel: "Rp 0" },
             ],
     };
   }, [isAuthenticated, transactions]);
@@ -238,16 +234,34 @@ export default function DashboardPage() {
           </div>
           <div className="weather-status">
             <div className="weather-main">
-              <div className="weather-emoji">☀️</div>
+              <div className="weather-emoji">
+                {transactions.length === 0 ? "☁️" : dashboardMetrics.netCashflow >= 0 ? "☀️" : "🌧️"}
+              </div>
               <div className="weather-info">
-                <div className="weather-condition">Cerah</div>
+                <div className="weather-condition">
+                  {transactions.length === 0
+                    ? "Belum Ada Data"
+                    : dashboardMetrics.netCashflow >= 0
+                    ? "Cerah"
+                    : "Perlu Waspada"}
+                </div>
                 <div className="weather-description">
-                  Keuangan dalam kondisi stabil
+                  {transactions.length === 0
+                    ? "Mulai catat transaksi keuangan Anda"
+                    : dashboardMetrics.netCashflow >= 0
+                    ? "Keuangan dalam kondisi stabil"
+                    : "Pengeluaran melebihi pemasukan"}
                 </div>
               </div>
             </div>
             <div className="weather-score">
-              <div className="score-value">85</div>
+              <div className="score-value">
+                {transactions.length === 0
+                  ? 0
+                  : dashboardMetrics.netCashflow >= 0
+                  ? 85
+                  : 45}
+              </div>
               <div className="score-label">Skor kesehatan</div>
             </div>
           </div>
@@ -283,11 +297,14 @@ export default function DashboardPage() {
               <AlertCircle size={18} className="insight-icon" />
               <div className="insight-content">
                 <div className="insight-title">
-                  Pengeluaran transportasi meningkat 35%
+                  {transactions.length > 0
+                    ? `Pos Utama: ${dashboardMetrics.distribution[0]?.name || "-"}`
+                    : "Belum ada pengeluaran tercatat (Rp 0)"}
                 </div>
                 <div className="insight-description">
-                  Dibanding bulan lalu. Pertimbangkan untuk menggunakan
-                  transportasi umum.
+                  {transactions.length > 0
+                    ? `Total pengeluaran pos ini ${dashboardMetrics.distribution[0]?.amountLabel || "Rp 0"} (${dashboardMetrics.distribution[0]?.pct || 0}%).`
+                    : "Tambahkan transaksi agar AI dapat menganalisis pengeluaran Anda."}
                 </div>
               </div>
             </div>
@@ -295,11 +312,12 @@ export default function DashboardPage() {
               <Sparkles size={18} className="insight-icon" />
               <div className="insight-content">
                 <div className="insight-title">
-                  Potensi penghematan Rp 450.000
+                  Potensi penghematan {formatRupiah(Math.round(dashboardMetrics.expense * 0.15))}
                 </div>
                 <div className="insight-description">
-                  Ditemukan pola pengeluaran yang bisa dioptimalkan di kategori
-                  hiburan.
+                  {dashboardMetrics.expense > 0
+                    ? "Estimasi efisiensi 15% dari total pengeluaran berjalan Anda."
+                    : "Potensi penghematan akan dihitung otomatis dari pengeluaran Anda."}
                 </div>
               </div>
             </div>
@@ -307,10 +325,11 @@ export default function DashboardPage() {
               <TrendingUp size={18} className="insight-icon" />
               <div className="insight-content">
                 <div className="insight-title">
-                  Target tabungan tercapai 78%
+                  Arus Kas Bersih: {formatRupiah(dashboardMetrics.netCashflow)}
                 </div>
                 <div className="insight-description">
-                  Kamu sudah menabung Rp 3.120.000 dari target Rp 4.000.000.
+                  Pemasukan {formatRupiah(dashboardMetrics.income)} · Pengeluaran{" "}
+                  {formatRupiah(dashboardMetrics.expense)}.
                 </div>
               </div>
             </div>
@@ -325,30 +344,28 @@ export default function DashboardPage() {
           <div className="card-heading">
             <div>
               <h2>Pemasukan vs Pengeluaran</h2>
-              <p>Perbandingan real-time cashflow per minggu ({selectedPeriod})</p>
+              <p>Perbandingan real-time cashflow ({selectedPeriod})</p>
             </div>
           </div>
           <div className="chart">
-            <div className="chart-col">
-              <div className="bar dark" style={{ height: "70%" }}></div>
-              <div className="bar" style={{ height: "40%" }}></div>
-              <span className="chart-label">Minggu 1</span>
-            </div>
-            <div className="chart-col">
-              <div className="bar dark" style={{ height: "60%" }}></div>
-              <div className="bar" style={{ height: "50%" }}></div>
-              <span className="chart-label">Minggu 2</span>
-            </div>
-            <div className="chart-col">
-              <div className="bar dark" style={{ height: "85%" }}></div>
-              <div className="bar" style={{ height: "45%" }}></div>
-              <span className="chart-label">Minggu 3</span>
-            </div>
-            <div className="chart-col">
-              <div className="bar dark" style={{ height: "65%" }}></div>
-              <div className="bar" style={{ height: "55%" }}></div>
-              <span className="chart-label">Minggu 4</span>
-            </div>
+            {[1, 2, 3, 4].map((week) => {
+              const maxVal = Math.max(dashboardMetrics.income, dashboardMetrics.expense, 1);
+              const incH =
+                dashboardMetrics.income > 0
+                  ? Math.max(10, Math.round((dashboardMetrics.income / maxVal) * 85))
+                  : 4;
+              const expH =
+                dashboardMetrics.expense > 0
+                  ? Math.max(10, Math.round((dashboardMetrics.expense / maxVal) * 85))
+                  : 4;
+              return (
+                <div className="chart-col" key={week}>
+                  <div className="bar dark" style={{ height: `${incH}%` }}></div>
+                  <div className="bar" style={{ height: `${expH}%` }}></div>
+                  <span className="chart-label">Minggu {week}</span>
+                </div>
+              );
+            })}
           </div>
           <div className="legend">
             <div>
@@ -430,50 +447,8 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : (
-          <div className="transaction-list">
-            <div className="transaction-row">
-              <div className="transaction-icon">
-                <Briefcase size={18} />
-              </div>
-              <div className="transaction-info">
-                <strong>Gaji Pokok &amp; Tunjangan Kinerja</strong>
-                <small>28 Nov 2026 · 09:30 WIB · Penghasilan Tetap</small>
-              </div>
-              <div className="amount income">+ Rp 10.500.000</div>
-            </div>
-
-            <div className="transaction-row">
-              <div className="transaction-icon">
-                <ShoppingCart size={18} />
-              </div>
-              <div className="transaction-info">
-                <strong>Belanja Bulanan Supermarket</strong>
-                <small>25 Nov 2026 · 16:15 WIB · Kebutuhan Pokok</small>
-              </div>
-              <div className="amount expense">- Rp 1.450.000</div>
-            </div>
-
-            <div className="transaction-row">
-              <div className="transaction-icon">
-                <Zap size={18} />
-              </div>
-              <div className="transaction-info">
-                <strong>Pembayaran Proyek UI Design</strong>
-                <small>24 Nov 2026 · 14:00 WIB · Pendapatan Sampingan</small>
-              </div>
-              <div className="amount income">+ Rp 2.350.000</div>
-            </div>
-
-            <div className="transaction-row">
-              <div className="transaction-icon">
-                <Car size={18} />
-              </div>
-              <div className="transaction-info">
-                <strong>PLN Pascabayar &amp; WiFi Fiber</strong>
-                <small>20 Nov 2026 · 08:10 WIB · Tagihan &amp; Utilitas</small>
-              </div>
-              <div className="amount expense">- Rp 890.000</div>
-            </div>
+          <div className="empty-state">
+            Belum ada transaksi tercatat (Rp 0). Klik tombol &ldquo;+ Tambah transaksi&rdquo; di atas untuk mulai mencatat keuangan Anda.
           </div>
         )}
       </div>

@@ -27,69 +27,6 @@ import {
 import { formatRupiah } from "@/lib/format";
 import type { BudgetItem, Category } from "@/types";
 
-const DEMO_BUDGETS: BudgetItem[] = [
-  {
-    budget_id: "demo-b1",
-    user_id: "demo",
-    category_id: "cat-1",
-    category_name: "Makanan & Minuman",
-    amount: "2700000",
-    spent: "2850000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-  {
-    budget_id: "demo-b2",
-    user_id: "demo",
-    category_id: "cat-2",
-    category_name: "Rumah & Utilitas",
-    amount: "1800000",
-    spent: "1620000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-  {
-    budget_id: "demo-b3",
-    user_id: "demo",
-    category_id: "cat-3",
-    category_name: "Transportasi",
-    amount: "1500000",
-    spent: "1150000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-  {
-    budget_id: "demo-b4",
-    user_id: "demo",
-    category_id: "cat-4",
-    category_name: "Hiburan & Gaya Hidup",
-    amount: "1000000",
-    spent: "950000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-  {
-    budget_id: "demo-b5",
-    user_id: "demo",
-    category_id: "cat-5",
-    category_name: "Kesehatan & Fitnes",
-    amount: "600000",
-    spent: "450000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-  {
-    budget_id: "demo-b6",
-    user_id: "demo",
-    category_id: "cat-6",
-    category_name: "Edukasi & Buku",
-    amount: "400000",
-    spent: "400000",
-    start_date: "2026-11-01",
-    end_date: "2026-11-30",
-  },
-];
-
 function getBudgetIcon(categoryName: string) {
   const lower = categoryName.toLowerCase();
   if (lower.includes("makan") || lower.includes("f&b")) return <Utensils size={18} />;
@@ -110,11 +47,11 @@ function getBudgetStatus(amount: number, spent: number): "Defisit" | "Waspada" |
 
 export default function BudgetingPage() {
   const [filterTab, setFilterTab] = useState("Semua");
-  const [budgets, setBudgets] = useState<BudgetItem[]>(DEMO_BUDGETS);
+  const [budgets, setBudgets] = useState<BudgetItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [amountInput, setAmountInput] = useState("Rp 1.750.000");
+  const [amountInput, setAmountInput] = useState("Rp 0");
   const [periodType, setPeriodType] = useState("monthly");
   const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,7 +65,7 @@ export default function BudgetingPage() {
     const token = getAuthToken();
     if (!token) {
       setIsAuthenticated(false);
-      setBudgets(DEMO_BUDGETS);
+      setBudgets([]);
       return;
     }
 
@@ -498,7 +435,9 @@ export default function BudgetingPage() {
                 </span>
               </div>
               <h3 style={{ font: "700 16px Manrope", margin: "4px 0" }}>
-                Mitigasi Defisit: Realokasikan Surplus Transportasi ke F&amp;B
+                {budgets.length > 0
+                  ? "Status Pagu & Realisasi Anggaran Anda"
+                  : "Belum Ada Pagu Anggaran Aktif (Rp 0)"}
               </h3>
               <p
                 className="muted"
@@ -508,24 +447,31 @@ export default function BudgetingPage() {
                   lineHeight: "1.6",
                 }}
               >
-                FIRA mendeteksi defisit{" "}
-                <strong style={{ color: "var(--red)" }}>
-                  Rp 150.000 (+8% over-limit)
-                </strong>{" "}
-                pada kategori <strong>Makanan &amp; Minuman</strong> akibat
-                lonjakan makan luar akhir pekan. Sementara itu, kategori{" "}
-                <strong>Transportasi</strong> memiliki sisa anggaran longgar{" "}
-                <strong>Rp 350.000</strong> dengan sisa 2 hari aktif.
+                {budgets.length > 0 ? (
+                  <>
+                    Total pagu anggaran terdaftar sebesar{" "}
+                    <strong>{formatRupiah(metrics.totalPagu)}</strong> dengan
+                    realisasi belanja{" "}
+                    <strong>{formatRupiah(metrics.totalSpent)}</strong> (sisa
+                    anggaran{" "}
+                    <strong>{formatRupiah(metrics.remaining)}</strong>).
+                  </>
+                ) : (
+                  <>
+                    Semua pagu anggaran saat ini masih <strong>Rp 0</strong>.
+                    Gunakan Konfigurator Cepat di bawah untuk membuat pagu
+                    anggaran kategori Anda.
+                  </>
+                )}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={() =>
-              setFeedbackMsg({
-                type: "success",
-                text: "Rekomendasi realokasi AI (+Rp 250.000) telah disiapkan pada konfigurator anggaran.",
-              })
+              document
+                .getElementById("budget-configurator-form")
+                ?.scrollIntoView({ behavior: "smooth" })
             }
             className="primary-button"
             style={{
@@ -535,7 +481,7 @@ export default function BudgetingPage() {
               whiteSpace: "nowrap",
             }}
           >
-            <ArrowRightLeft size={15} /> Terapkan Realokasi (+Rp 250.000)
+            <ArrowRightLeft size={15} /> Atur Pagu Anggaran
           </button>
         </div>
 
@@ -552,9 +498,9 @@ export default function BudgetingPage() {
           }}
         >
           <span style={{ color: "var(--green)" }}>
-            <strong>Sinkronisasi AI Smart Auditor:</strong> Ditemukan
-            pengeluaran langganan streaming tidak terpakai senilai Rp 610.000.
-            Pangkas untuk memperbesar Dana Darurat Desember.
+            <strong>Sinkronisasi AI Smart Auditor:</strong> Pantau efisiensi
+            pengeluaran dan langganan Anda secara otomatis melalui modul AI
+            Smart Auditor.
           </span>
           <Link href="/smart-auditor" className="text-link">
             Buka Smart Auditor &gt;

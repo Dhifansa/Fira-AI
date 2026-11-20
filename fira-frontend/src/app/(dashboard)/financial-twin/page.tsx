@@ -14,76 +14,48 @@ import { aiApi } from "@/lib/api";
 import type { FinancialTwinData, TwinChatMessage } from "@/types";
 
 const INITIAL_TWIN_DATA: FinancialTwinData = {
-  syncedAt: "Hari ini, 09:30 WIB",
-  periodLabel: "November 2026",
+  syncedAt: "Belum Ada Data",
+  periodLabel: "Periode Berjalan",
   hasRealData: false,
-  analyzedTransactionsCount: 142,
-  accuracyLabel: "Akurasi Profil: 94% High Precision",
+  analyzedTransactionsCount: 0,
+  accuracyLabel: "Akurasi Profil: 0% (Menunggu Input Transaksi)",
   archetype: {
-    title: "Balanced Wealth Builder",
-    badge: "Tipe: Akumulator Waspada",
-    similarityScore: 92,
+    title: "Belum Terbentuk (Data Kosong)",
+    badge: "Tipe: Menunggu Data",
+    similarityScore: 0,
     description:
-      "Model merefleksikan 92% kecenderungan Anda saat dihadapkan pada alokasi gaji, investasi impulsif, dan pembayaran kewajiban rutin.",
-    savingsRate: "42.2%",
-    cashStability: "Sangat Baik",
+      "Belum ada histori transaksi untuk membentuk model kembaran finansial. Semua indikator dimulai dari Rp 0.",
+    savingsRate: "0%",
+    cashStability: "Belum Ada Data",
     riskProfile: "Moderat",
   },
   habits: [
     {
       id: "h1",
       type: "normal",
-      title: "Disiplin Tabungan Awal Bulan",
+      title: "Belum Ada Pola Transaksi",
       description:
-        "Konsisten menyisihkan tabungan di awal bulan (H+1 gajian) rata-rata Rp 4.500.000 sebelum alokasi gaya hidup.",
-    },
-    {
-      id: "h2",
-      type: "warning",
-      title: "Anomali Pengeluaran Akhir Pekan",
-      description:
-        "Peningkatan impulsif akhir pekan pada kategori F&B (+18% di atas rata-rata hari kerja).",
-    },
-    {
-      id: "h3",
-      type: "normal",
-      title: "Surplus Cash Flow Konsisten",
-      description:
-        "Cashflow bulanan selalu mencatat surplus rata-rata Rp 5.430.000/bulan dalam 4 bulan berturut-turut.",
+        "Pemasukan Rp 0 dan Pengeluaran Rp 0. Pola kebiasaan finansial akan muncul otomatis setelah Anda mengisi transaksi.",
     },
   ],
   leakAlert: {
-    title: "Potensi Kebocoran Halus Terdeteksi",
-    badge: "Perlu Tindakan",
+    title: "Belum Ada Kebocoran Kas",
+    badge: "Rp 0",
     description:
-      "Porsi langganan digital berulang terdeteksi di 4 platform (total Rp 380.000/bln) dengan frekuensi penggunaan sangat rendah (< 2 kali/bulan).",
+      "Total pengeluaran masih Rp 0. Tidak ada kebocoran kas yang terdeteksi.",
   },
   initialMessages: [
     {
       sender: "twin",
-      time: "09:31 WIB",
-      text: "Halo! Saya kembaran finansial Anda. Saya telah menganalisis buku kas Anda dengan total surplus arus kas berjalan sebesar Rp 5.430.000. Ada keputusan finansial atau pembelian yang ingin kita diskusikan hari ini?",
-      isRich: false,
-      metrics: null,
-    },
-    {
-      sender: "user",
-      time: "09:33 WIB",
-      text: "Bagaimana kondisi keuangan saya bulan ini dan apa yang perlu saya waspadai?",
-      isRich: false,
-      metrics: null,
-    },
-    {
-      sender: "twin",
-      time: "09:34 WIB",
+      time: "Online",
+      text: "Halo! Saat ini saldo dan transaksi Anda masih Rp 0 (0 transaksi tercatat). Silakan tambahkan transaksi pemasukan atau pengeluaran Anda terlebih dahulu, atau tanyakan apa saja seputar perencanaan keuangan kepada saya!",
       isRich: true,
-      text: "Kondisi keuangan Anda bulan ini berada di level SANGAT SEHAT. Pemasukan Rp 12.850.000 melampaui target bulanan (107%), didukung efisiensi belanja aktual sebesar Rp 7.420.000 (hanya 92.7% dari batas pagu anggaran Anda).",
       metrics: {
-        pemasukan: "Rp 12.850.000",
-        pengeluaran: "Rp 7.420.000",
-        ketahanan: "6.4 Bulan",
-        healthScore: "88/100",
-        status: "AMAN",
+        pemasukan: "Rp 0",
+        pengeluaran: "Rp 0",
+        ketahanan: "0 Bulan",
+        healthScore: "0/100",
+        status: "RP 0",
       },
     },
   ],
@@ -99,15 +71,13 @@ export default function FinancialTwinPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [riskIdx, setRiskIdx] = useState(1);
 
-  const loadTwinProfile = useCallback(async (riskOverride?: string, resetChat = false) => {
+  const loadTwinProfile = useCallback(async (riskOverride?: string) => {
     await Promise.resolve();
     setIsSyncing(true);
     try {
       const data = await aiApi.getFinancialTwin(riskOverride);
       setTwinData(data);
-      if (resetChat || data.hasRealData) {
-        setMessages(data.initialMessages);
-      }
+      setMessages(data.initialMessages);
     } catch {
       // Gunakan fallback profil lokal jika backend belum merespons
     } finally {
@@ -177,7 +147,7 @@ export default function FinancialTwinPage() {
     const nextIdx = (riskIdx + 1) % RISK_PROFILES.length;
     setRiskIdx(nextIdx);
     const nextRisk = RISK_PROFILES[nextIdx];
-    await loadTwinProfile(nextRisk, false);
+    await loadTwinProfile(nextRisk);
 
     const nowTime =
       new Date().toLocaleTimeString("id-ID", {
@@ -249,7 +219,7 @@ export default function FinancialTwinPage() {
           <div className="header-actions">
             <button
               type="button"
-              onClick={() => void loadTwinProfile(RISK_PROFILES[riskIdx], true)}
+              onClick={() => void loadTwinProfile(RISK_PROFILES[riskIdx])}
               disabled={isSyncing}
               className="btn-secondary"
             >

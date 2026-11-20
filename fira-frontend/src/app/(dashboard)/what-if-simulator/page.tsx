@@ -84,87 +84,87 @@ const INITIAL_SIMULATION: WhatIfSimulationData = {
   hasRealData: false,
   parameters: {
     scenarioType: "Pengeluaran Besar",
-    scenarioName: "Upgrade Laptop Kerja M3 Max",
-    totalAmount: 15000000,
+    scenarioName: "",
+    totalAmount: 0,
     paymentMethod: "cicilan12",
-    downPayment: 3000000,
+    downPayment: 0,
     tenorMonths: 12,
-    autoCompensate: true,
-    monthlyInstallment: 1060000,
-    compensationCut: 477000,
+    autoCompensate: false,
+    monthlyInstallment: 0,
+    compensationCut: 0,
   },
   baseline: {
-    actualNetCashflow: 5430000,
-    actualIncome: 12850000,
-    actualExpense: 7420000,
-    actualEmergencyMonths: 6.4,
-    actualHealthScore: 88,
+    actualNetCashflow: 0,
+    actualIncome: 0,
+    actualExpense: 0,
+    actualEmergencyMonths: 0,
+    actualHealthScore: 0,
   },
   impact: {
-    projectedNetCashflow: 4847000,
-    cashflowDelta: -583000,
-    cashflowDeltaPct: -10.7,
-    projectedEmergencyMonths: 5.9,
-    emergencyDelta: -0.5,
-    dsrPercentage: 8.2,
-    dsrStatus: "Sangat Rendah (Batas Aman Maksimal 30%)",
-    projectedHealthScore: 85,
-    healthDelta: -3,
+    projectedNetCashflow: 0,
+    cashflowDelta: 0,
+    cashflowDeltaPct: 0,
+    projectedEmergencyMonths: 0,
+    emergencyDelta: 0,
+    dsrPercentage: 0,
+    dsrStatus: "Belum ada data pemasukan (Rp 0)",
+    projectedHealthScore: 0,
+    healthDelta: 0,
   },
   projectionBars: [
-    { label: "Des", surplus: 4847000, heightPct: 68 },
-    { label: "Jan", surplus: 5040000, heightPct: 72 },
-    { label: "Feb", surplus: 5230000, heightPct: 75 },
-    { label: "Mar", surplus: 5420000, heightPct: 78 },
-    { label: "Apr", surplus: 5610000, heightPct: 82 },
-    { label: "Mei", surplus: 5800000, heightPct: 86 },
+    { label: "Bln 1", surplus: 0, heightPct: 5 },
+    { label: "Bln 2", surplus: 0, heightPct: 5 },
+    { label: "Bln 3", surplus: 0, heightPct: 5 },
+    { label: "Bln 4", surplus: 0, heightPct: 5 },
+    { label: "Bln 5", surplus: 0, heightPct: 5 },
+    { label: "Bln 6", surplus: 0, heightPct: 5 },
   ],
   evaluation: {
-    badge: "REKOMENDASI: LAYAK DIAMBIL",
+    badge: "MENUNGGU DATA TRANSAKSI (RP 0)",
     level: "safe",
     points: [
-      "✓ Pembelian laptop Rp 15.000.000 dengan cicilan 12 bulan TIDAK mengganggu stabilitas arus kas pokok Anda.",
-      "⚠️ Pembayaran DP Rp 3.000.000 sedikit mengikis bantalan dana darurat dari 6.4 bulan ke 5.9 bulan. Mengaktifkan kompensasi penghematan F&B akan menjaga surplus tetap optimal.",
+      "ℹ️ Saldo dan arus kas aktual Anda saat ini masih Rp 0.",
+      "ℹ️ Pilih salah satu Preset Skenario di atas atau masukkan nilai simulasi setelah mencatat transaksi.",
     ],
   },
   comparisonMatrix: {
     optionA_Cash: {
-      upfront: "Rp 15.000.000 (Tunai)",
+      upfront: "Rp 0 (Tunai)",
       monthlyLoad: "Rp 0 / bulan",
-      emergencyImpact: "Turun ke 3.6 Bulan (Kritis)",
-      emergencySeverity: "danger",
-      totalCost: "Rp 15.000.000 (Nett)",
-      verdict: "Risiko Likuiditas",
+      emergencyImpact: "0 Bulan",
+      emergencySeverity: "safe",
+      totalCost: "Rp 0 (Nett)",
+      verdict: "Rp 0",
     },
     optionB_Installment: {
-      upfront: "Rp 3.000.000 (DP 20%)",
-      monthlyLoad: "Rp 1.060.000 / bulan (12x)",
-      emergencyImpact: "Turun ke 5.9 Bulan (Aman)",
+      upfront: "Rp 0 (DP 20%)",
+      monthlyLoad: "Rp 0 / bulan (12x)",
+      emergencyImpact: "0 Bulan",
       emergencySeverity: "safe",
-      totalCost: "Rp 15.720.000 (Bunga Rp 720.000)",
-      verdict: "Paling Seimbang",
+      totalCost: "Rp 0 (Bunga Rp 0)",
+      verdict: "Rp 0",
     },
     optionC_SaveFirst: {
       upfront: "Rp 0 Hari Ini",
-      monthlyLoad: "Rp 5.000.000 / bln (Selama 3 Bln)",
-      emergencyImpact: "Tetap 6.4 Bulan (Terjaga)",
+      monthlyLoad: "Rp 0 / bln (Selama 3 Bln)",
+      emergencyImpact: "Tetap 0 Bulan",
       emergencySeverity: "safe",
-      totalCost: "Rp 15.000.000 (Bebas Bunga)",
-      verdict: "Paling Hemat Finansial",
+      totalCost: "Rp 0 (Bebas Bunga)",
+      verdict: "Rp 0",
     },
   },
 };
 
 export default function WhatIfSimulatorPage() {
   const router = useRouter();
-  const [selectedPreset, setSelectedPreset] = useState("laptop");
+  const [selectedPreset, setSelectedPreset] = useState("");
   const [scenarioType, setScenarioType] = useState("Pengeluaran Besar");
-  const [scenarioName, setScenarioName] = useState("Upgrade Laptop Kerja M3 Max");
-  const [totalAmountInput, setTotalAmountInput] = useState("Rp 15.000.000");
+  const [scenarioName, setScenarioName] = useState("");
+  const [totalAmountInput, setTotalAmountInput] = useState("Rp 0");
   const [paymentMethod, setPaymentMethod] = useState<"tunai" | "cicilan12">("cicilan12");
-  const [downPaymentInput, setDownPaymentInput] = useState("3.000.000");
+  const [downPaymentInput, setDownPaymentInput] = useState("0");
   const [tenorMonths, setTenorMonths] = useState(12);
-  const [autoCompensate, setAutoCompensate] = useState(true);
+  const [autoCompensate, setAutoCompensate] = useState(false);
 
   const [simResult, setSimResult] = useState<WhatIfSimulationData>(INITIAL_SIMULATION);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -185,9 +185,16 @@ export default function WhatIfSimulatorPage() {
   }, []);
 
   useEffect(() => {
-    const initialPreset = PRESETS[0].input;
     const timer = window.setTimeout(() => {
-      void executeSimulation(initialPreset);
+      void executeSimulation({
+        scenarioType: "Pengeluaran Besar",
+        scenarioName: "",
+        totalAmount: 0,
+        paymentMethod: "cicilan12",
+        downPayment: 0,
+        tenorMonths: 12,
+        autoCompensate: false,
+      });
     }, 0);
 
     const handleSync = () => {
@@ -223,9 +230,30 @@ export default function WhatIfSimulatorPage() {
     void executeSimulation(preset.input);
   };
 
+  const handleResetForm = () => {
+    setSelectedPreset("");
+    setScenarioType("Pengeluaran Besar");
+    setScenarioName("");
+    setTotalAmountInput("Rp 0");
+    setPaymentMethod("cicilan12");
+    setDownPaymentInput("0");
+    setTenorMonths(12);
+    setAutoCompensate(false);
+    setFeedbackMsg(null);
+    void executeSimulation({
+      scenarioType: "Pengeluaran Besar",
+      scenarioName: "",
+      totalAmount: 0,
+      paymentMethod: "cicilan12",
+      downPayment: 0,
+      tenorMonths: 12,
+      autoCompensate: false,
+    });
+  };
+
   const handleRecalculateForm = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const totalAmount = Math.max(100000, parseNominalInput(totalAmountInput));
+    const totalAmount = Math.max(0, parseNominalInput(totalAmountInput));
     const downPayment = Math.max(0, parseNominalInput(downPaymentInput));
     void executeSimulation({
       scenarioType,
@@ -307,7 +335,7 @@ export default function WhatIfSimulatorPage() {
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             type="button"
-            onClick={() => handleSelectPreset(PRESETS[0])}
+            onClick={handleResetForm}
             className="secondary-button"
             style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >

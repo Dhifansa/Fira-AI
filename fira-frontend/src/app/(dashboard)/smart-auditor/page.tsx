@@ -24,111 +24,65 @@ import { formatRupiah } from "@/lib/format";
 import type { SmartAuditorData } from "@/types";
 
 const INITIAL_AUDIT_DATA: SmartAuditorData = {
-  auditedAt: "Hari ini, 08:30 WIB",
-  periodLabel: "November 2026",
+  auditedAt: "Belum Ada Data",
+  periodLabel: "Periode Berjalan",
   hasRealData: false,
   metrics: {
-    efficiencyScore: 76,
-    efficiencyLabel: "Cukup Baik · Potensi +14 Poin",
-    potentialSavingsMonthly: 1450000,
-    potentialSavingsYearly: 17400000,
-    leaksCount: 3,
-    leaksSubtitle: "2 Langganan Pasif, 1 Anomali Lonjakan",
-    auditedTransactionsCount: 142,
+    efficiencyScore: 0,
+    efficiencyLabel: "Belum ada transaksi untuk diaudit",
+    potentialSavingsMonthly: 0,
+    potentialSavingsYearly: 0,
+    leaksCount: 0,
+    leaksSubtitle: "0 Kebocoran Terdeteksi",
+    auditedTransactionsCount: 0,
   },
   spendingConcentration: {
-    totalExpense: 7420000,
-    top4SharePct: 88,
-    categories: [
-      { category_id: null, name: "Makanan & Minuman (F&B)", amount: 2850000, pct: 38 },
-      { category_id: null, name: "Kebutuhan Rumah & Utilitas", amount: 1620000, pct: 22 },
-      { category_id: null, name: "Transportasi & Bensin", amount: 1150000, pct: 15 },
-      { category_id: null, name: "Hiburan & Gaya Hidup", amount: 950000, pct: 13 },
-    ],
-    auditorNote:
-      "Pos F&B melampaui batas wajar 30% dari total belanja bulanan akibat tingginya transaksi pesan-antar makanan online di akhir pekan. Disarankan merevaluasi batas belanja mikro mingguan.",
+    totalExpense: 0,
+    top4SharePct: 0,
+    categories: [],
+    auditorNote: "Belum ada pengeluaran tercatat (Rp 0).",
   },
   anomaly: {
     category_id: null,
-    spikePct: 42,
-    dateLabel: "22-24 Nov 2026",
-    title: "Lonjakan Ekstrem Kategori F&B Akhir Pekan",
-    normalDailyAvg: 65000,
-    currentDailyAvg: 245000,
+    spikePct: 0,
+    dateLabel: "-",
+    title: "Belum Ada Anomali Pengeluaran",
+    normalDailyAvg: 0,
+    currentDailyAvg: 0,
     explanation:
-      "Ditemukan 5 transaksi kafe dan delivery beruntun dalam kurun waktu 48 jam dengan nominal akumulatif Rp 735.000.",
+      "Belum ada transaksi pengeluaran yang tercatat. Catat transaksi Anda agar AI Smart Auditor dapat memindai lonjakan belanja.",
     recommendation:
-      "Terapkan batas pagu harian Weekend Cap sebesar Rp 120.000 atau aktifkan notifikasi peringatan saat belanja F&B melewati Rp 100.000/hari.",
-    recommendedMonthlyCap: 2400000,
-    severityLabel: "Peringatan Sedang",
+      "Tambahkan transaksi pemasukan dan pengeluaran terlebih dahulu untuk mendapatkan rekomendasi batas belanja otomatis.",
+    recommendedMonthlyCap: 0,
+    severityLabel: "Belum Ada Data",
   },
-  subscriptions: [
-    {
-      id: "cloud-storage",
-      icon: "cloud",
-      name: "Cloud Storage Backup",
-      monthlyCost: 135000,
-      utilizationPct: 12,
-      utilizationLabel: "Utilisasi Kuota",
-      utilizationValue: "Hanya 12%",
-      advice: "Downgrade ke paket 200GB. Kebutuhan data riil Anda hanya 140GB.",
-      potentialSaving: 95000,
-      actionLabel: "Downgrade Paket",
-      isCritical: false,
-    },
-    {
-      id: "gym-membership",
-      icon: "dumbbell",
-      name: "Membership Gym",
-      monthlyCost: 450000,
-      utilizationPct: 0,
-      utilizationLabel: "Presensi 40 Hari Terakhir",
-      utilizationValue: "0 Check-in",
-      advice: "Tidak terdeteksi absensi presensi. Bekukan/jeda atau hentikan langganan aktif.",
-      potentialSaving: 450000,
-      actionLabel: "Jeda / Bekukan",
-      isCritical: true,
-    },
-    {
-      id: "video-streaming",
-      icon: "tv",
-      name: "Video Streaming B",
-      monthlyCost: 65000,
-      utilizationPct: 20,
-      utilizationLabel: "Durasi Tontonan",
-      utilizationValue: "< 1 jam / bulan",
-      advice: "Terdapat overlap konten dengan Platform A yang digunakan rutin.",
-      potentialSaving: 65000,
-      actionLabel: "Hentikan Langganan",
-      isCritical: false,
-    },
-  ],
+  subscriptions: [],
   quickWins: [
     {
       id: "qw-goal-redirect",
       badge: "Dampak Tinggi",
       badgeType: "warning",
-      title: "Alihkan Surplus Langganan ke Dana Darurat",
+      title: "Alihkan Efisiensi ke Dana Darurat",
       description:
-        "Alokasikan efisiensi pembatalan gym dan streaming (Rp 610.000/bln) langsung ke rekening Dana Darurat. Mempercepat target 6 bulan tercapai 2,3 bulan lebih awal.",
+        "Catat transaksi atau daftar langganan Anda untuk menghitung potensi penghematan bulanan (Saat ini Rp 0/bln).",
       actionLabel: "Aktifkan Autodebit",
-      savingAmount: 610000,
+      savingAmount: 0,
     },
     {
       id: "qw-cashback",
-      badge: "Cashback Rutin",
+      badge: "Optimasi Rutin",
       badgeType: "normal",
-      title: "Optimasi Pengeluaran BBM via Rekening Terintegrasi",
+      title: "Pengendalian Anggaran Bulanan",
       description:
-        "Gunakan kartu kredit/debit payroll terhubung untuk transaksi BBM di SPBU rekanan. Memberikan potensi cashback penghematan Rp 120.000/bln secara otomatis.",
-      actionLabel: "Hubungkan Promo",
-      savingAmount: 120000,
+        "Potensi penghematan Rp 0/bln (belum ada pengeluaran tercatat).",
+      actionLabel: "Aktifkan Optimasi",
+      savingAmount: 0,
     },
   ],
   budgetSyncPreview: [
-    "Batas F&B disesuaikan: Rp 2.400.000",
-    "Pos Langganan Berkurang Rp 610.000",
-    "Porsi Tabungan bertambah otomatis",
+    "Batas Kategori: Rp 0 (Belum ada transaksi)",
+    "Pos Langganan: Rp 0",
+    "Target Tabungan: Rp 0",
   ],
 };
 
@@ -494,27 +448,33 @@ export default function SmartAuditorPage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {audit.spendingConcentration.categories.map((cat, idx) => (
-              <div key={cat.category_id || idx}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: "12px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <strong>{cat.name}</strong>
-                  <span>
-                    <strong>{formatRupiah(cat.amount)}</strong>{" "}
-                    <span style={{ color: "var(--muted)" }}>({cat.pct}%)</span>
-                  </span>
-                </div>
-                <div className="progress">
-                  <span style={{ width: `${Math.min(100, Math.max(4, cat.pct))}%` }}></span>
-                </div>
+            {audit.spendingConcentration.categories.length === 0 ? (
+              <div className="empty-state" style={{ padding: "20px 10px" }}>
+                Belum ada pengeluaran tercatat (Rp 0). Tambahkan transaksi pengeluaran untuk melihat distribusi belanja.
               </div>
-            ))}
+            ) : (
+              audit.spendingConcentration.categories.map((cat, idx) => (
+                <div key={cat.category_id || idx}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: "12px",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    <strong>{cat.name}</strong>
+                    <span>
+                      <strong>{formatRupiah(cat.amount)}</strong>{" "}
+                      <span style={{ color: "var(--muted)" }}>({cat.pct}%)</span>
+                    </span>
+                  </div>
+                  <div className="progress">
+                    <span style={{ width: `${Math.min(100, Math.max(0, cat.pct))}%` }}></span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="notice" style={{ marginTop: "16px", fontSize: "11px" }}>
@@ -651,8 +611,15 @@ export default function SmartAuditorPage() {
           </div>
         </div>
 
-        <div className="grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
-          {audit.subscriptions.map((sub) => {
+        {audit.subscriptions.length === 0 ? (
+          <div className="empty-state">
+            Belum ada daftar langganan tercatat (Rp 0). Klik tombol{" "}
+            <strong>&ldquo;+ Tambah Langganan&rdquo;</strong> di kanan atas untuk mengaudit layanan
+            langganan bulanan Anda.
+          </div>
+        ) : (
+          <div className="grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+            {audit.subscriptions.map((sub) => {
             const isResolved = Boolean(resolvedSubs[sub.id]);
             return (
               <div
@@ -763,7 +730,8 @@ export default function SmartAuditorPage() {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 5. Peluang Penghematan Taktis & Sinkronisasi */}

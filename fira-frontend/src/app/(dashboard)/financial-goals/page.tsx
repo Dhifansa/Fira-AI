@@ -26,49 +26,6 @@ import {
 import { formatDate, formatRupiah } from "@/lib/format";
 import type { FinancialGoalItem } from "@/types";
 
-const DEMO_GOALS: Array<FinancialGoalItem & { demoSaved: number }> = [
-  {
-    financial_goal_id: "demo-g1",
-    user_id: "demo",
-    name: "Dana Darurat 6 Bulan",
-    target_amount: "45000000",
-    start_date: "2026-06-01",
-    end_date: "2027-05-31",
-    status: "active",
-    demoSaved: 28500000,
-  },
-  {
-    financial_goal_id: "demo-g2",
-    user_id: "demo",
-    name: "Laptop Kerja Baru (M3 Pro)",
-    target_amount: "20000000",
-    start_date: "2026-08-01",
-    end_date: "2027-02-28",
-    status: "active",
-    demoSaved: 14200000,
-  },
-  {
-    financial_goal_id: "demo-g3",
-    user_id: "demo",
-    name: "Liburan Keluarga ke Jepang",
-    target_amount: "35000000",
-    start_date: "2026-11-01",
-    end_date: "2027-11-30",
-    status: "active",
-    demoSaved: 10750000,
-  },
-  {
-    financial_goal_id: "demo-g4",
-    user_id: "demo",
-    name: "Sertifikasi Profesional Finansial",
-    target_amount: "15000000",
-    start_date: "2026-11-01",
-    end_date: "2027-08-31",
-    status: "active",
-    demoSaved: 5000000,
-  },
-];
-
 function getGoalIcon(name: string) {
   const lower = name.toLowerCase();
   if (lower.includes("darurat")) return <ShieldCheck size={18} />;
@@ -83,13 +40,13 @@ function getGoalIcon(name: string) {
 
 export default function FinancialGoalsPage() {
   const [activeTab, setActiveTab] = useState("Semua");
-  const [goals, setGoals] = useState<FinancialGoalItem[]>(DEMO_GOALS);
+  const [goals, setGoals] = useState<FinancialGoalItem[]>([]);
   const [depositMap, setDepositMap] = useState<Record<string, number>>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Calculator / Form State
-  const [goalName, setGoalName] = useState("Dana Renovasi Rumah Sederhana");
-  const [targetNominal, setTargetNominal] = useState("Rp 15.000.000");
+  const [goalName, setGoalName] = useState("");
+  const [targetNominal, setTargetNominal] = useState("Rp 0");
   const [durationMonths, setDurationMonths] = useState<number>(12);
   const [planCategory, setPlanCategory] = useState("Pembelian Aset / Properti");
   const [depositFrequency, setDepositFrequency] = useState<"monthly" | "weekly">("monthly");
@@ -106,7 +63,7 @@ export default function FinancialGoalsPage() {
     const token = getAuthToken();
     if (!token) {
       setIsAuthenticated(false);
-      setGoals(DEMO_GOALS);
+      setGoals([]);
       return;
     }
 
@@ -145,14 +102,6 @@ export default function FinancialGoalsPage() {
   );
 
   const summary = useMemo(() => {
-    if (!isAuthenticated && goals === DEMO_GOALS) {
-      return {
-        totalTarget: 145000000,
-        totalSaved: 58450000,
-        savedPct: 40.3,
-        monthlyCommitment: 3250000,
-      };
-    }
     let totalTarget = 0;
     let totalSaved = 0;
     for (const g of goals) {
@@ -163,7 +112,7 @@ export default function FinancialGoalsPage() {
     const remaining = Math.max(0, totalTarget - totalSaved);
     const monthlyCommitment = Math.round(remaining / 12);
     return { totalTarget, totalSaved, savedPct, monthlyCommitment };
-  }, [goals, isAuthenticated, getSavedForGoal]);
+  }, [goals, getSavedForGoal]);
 
   const filteredGoals = useMemo(() => {
     if (activeTab === "Semua") return goals;
@@ -412,7 +361,7 @@ export default function FinancialGoalsPage() {
             <span style={{ fontSize: "11px", fontWeight: 400 }}>/bln</span>
           </div>
           <div className="stat-foot">
-            Dari surplus kas Rp 5.430.000 (Rasio aman 59.8%)
+            Estimasi setoran rata-rata per bulan
           </div>
         </div>
 
@@ -426,7 +375,7 @@ export default function FinancialGoalsPage() {
             {goals.filter((g) => g.status !== "completed").length} Aktif
           </div>
           <div className="stat-foot">
-            Target terdekat: {goals[0]?.name || "Laptop Kerja"}
+            Target terdekat: {goals[0]?.name || "Belum ada target"}
           </div>
         </div>
       </div>
@@ -483,8 +432,9 @@ export default function FinancialGoalsPage() {
                 </span>
               </div>
               <h3 style={{ font: "700 16px Manrope", margin: "4px 0" }}>
-                Rekomendasi Akselerasi: Sinkronisasi Penghematan AI Smart
-                Auditor
+                {goals.length > 0
+                  ? `Fokus Target Aktif: ${goals[0].name}`
+                  : "Belum Ada Target Finansial (Rp 0)"}
               </h3>
               <p
                 className="muted"
@@ -494,39 +444,50 @@ export default function FinancialGoalsPage() {
                   lineHeight: "1.6",
                 }}
               >
-                Dengan mengalihkan efisiensi pembatalan langganan pasif (
-                <strong>Rp 610.000/bln</strong>) dan surplus Transportasi (
-                <strong>Rp 350.000</strong>) ke target{" "}
-                <strong>&ldquo;Dana Darurat 6 Bulan&rdquo;</strong>, target Anda
-                akan tercapai <strong>2,4 bulan lebih cepat</strong> (April 2027
-                menjadi Januari 2027).
+                {goals.length > 0 ? (
+                  <>
+                    Total target akumulasi Anda sebesar{" "}
+                    <strong>{formatRupiah(summary.totalTarget)}</strong> dengan
+                    dana terkumpul{" "}
+                    <strong>{formatRupiah(summary.totalSaved)}</strong> (
+                    {summary.savedPct.toFixed(1)}%).
+                  </>
+                ) : (
+                  <>
+                    Saat ini belum ada target finansial yang dibuat (semua nilai{" "}
+                    <strong>Rp 0</strong>). Gunakan Kalkulator Cerdas di bawah
+                    untuk mulai merencanakan target tabungan Anda.
+                  </>
+                )}
               </p>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              flexShrink: 0,
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => {
-                if (goals[0]) handleAddDeposit(goals[0]);
-              }}
-              className="primary-button"
+          {goals.length > 0 && (
+            <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                whiteSpace: "nowrap",
+                flexDirection: "column",
+                gap: "8px",
+                flexShrink: 0,
               }}
             >
-              <Zap size={14} /> Terapkan Auto-Boost (+Rp 610.000/bln)
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (goals[0]) void handleAddDeposit(goals[0]);
+                }}
+                className="primary-button"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <Zap size={14} /> + Tambah Setoran Target Utama
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -778,7 +739,7 @@ export default function FinancialGoalsPage() {
             className="pill"
             style={{ background: "var(--green-soft)", color: "var(--green)" }}
           >
-            Kapasitas Bebas: Rp 2.180.000 / bln
+            Kalkulator Rencana Tabungan
           </span>
         </div>
 
@@ -961,9 +922,10 @@ export default function FinancialGoalsPage() {
                 className="positive"
                 style={{ float: "left", marginRight: "8px", marginTop: "2px" }}
               />
-              Berdasarkan sisa waktu {durationMonths} Bulan, surplus kas Anda
-              saat ini (Rp 5.430.000/bln) <strong>SANGAT CUKUP</strong> dan
-              tidak mengganggu alokasi kebutuhan pokok keluarga.
+              Berdasarkan durasi {durationMonths} Bulan, setoran rutin yang
+              dibutuhkan adalah{" "}
+              <strong>{formatRupiah(calculatedMonthlySaving)}/bln</strong> untuk
+              mencapai target tepat waktu.
             </div>
 
             <button

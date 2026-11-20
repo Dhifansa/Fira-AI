@@ -23,49 +23,6 @@ import { getAuthToken, transactionApi } from "@/lib/api";
 import { formatDate, formatRupiah } from "@/lib/format";
 import type { TransactionItem } from "@/types";
 
-const DEMO_TRANSACTIONS: TransactionItem[] = [
-  {
-    transaction_id: "demo-1",
-    user_id: "demo",
-    category_id: "cat-1",
-    category_name: "Transportasi",
-    type: "expense",
-    amount: "250000",
-    description: "Pertamax Turbo · SPBU Pertamina Kuningan",
-    transaction_date: "2026-11-22",
-  },
-  {
-    transaction_id: "demo-2",
-    user_id: "demo",
-    category_id: "cat-2",
-    category_name: "Pendapatan Bisnis",
-    type: "income",
-    amount: "2350000",
-    description: "Pembayaran Invoice Konsultasi · Klien Studio Rekacipta",
-    transaction_date: "2026-11-20",
-  },
-  {
-    transaction_id: "demo-3",
-    user_id: "demo",
-    category_id: "cat-3",
-    category_name: "Belanja & Retail",
-    type: "expense",
-    amount: "1120000",
-    description: "Peralatan Kantor & Ergonomi · Tokopedia Official Store",
-    transaction_date: "2026-11-18",
-  },
-  {
-    transaction_id: "demo-4",
-    user_id: "demo",
-    category_id: "cat-4",
-    category_name: "Tagihan & Utilitas",
-    type: "expense",
-    amount: "850000",
-    description: "Tagihan Listrik PLN & Wifi · Autodebet BCA Virtual Account",
-    transaction_date: "2026-11-15",
-  },
-];
-
 function getCategoryIcon(categoryName: string, type: string) {
   const lower = categoryName.toLowerCase();
   if (lower.includes("transport")) return <Car size={16} />;
@@ -82,7 +39,7 @@ function getCategoryIcon(categoryName: string, type: string) {
 export default function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<TransactionItem | null>(null);
-  const [transactions, setTransactions] = useState<TransactionItem[]>(DEMO_TRANSACTIONS);
+  const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -96,7 +53,7 @@ export default function TransactionsPage() {
     const token = getAuthToken();
     if (!token) {
       setIsAuthenticated(false);
-      setTransactions(DEMO_TRANSACTIONS);
+      setTransactions([]);
       return;
     }
 
@@ -161,9 +118,6 @@ export default function TransactionsPage() {
   }, [transactions, typeFilter, searchQuery]);
 
   const { totalIncome, totalExpense } = useMemo(() => {
-    if (!isAuthenticated && transactions === DEMO_TRANSACTIONS) {
-      return { totalIncome: 14850000, totalExpense: 6420000 };
-    }
     return transactions.reduce(
       (acc, tx) => {
         const amt = Number(tx.amount) || 0;
@@ -173,7 +127,7 @@ export default function TransactionsPage() {
       },
       { totalIncome: 0, totalExpense: 0 }
     );
-  }, [transactions, isAuthenticated]);
+  }, [transactions]);
 
   const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / pageSize));
   const paginatedTransactions = filteredTransactions.slice(
